@@ -222,7 +222,7 @@ jobs:
       if: env.ENABLE_KERNELSU == 'true' && contains(matrix.target, 'ksun')
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        curl -LSs "https://raw.githubusercontent.com/MrShockWAVEE/KernelSU-Next/next/kernel/setup.sh" | bash -s ShockWAVE
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next
         if [ -d KernelSU-Next ]; then
             KSU_VERSION="_$(cd KernelSU-Next && expr $(/usr/bin/git rev-list --count HEAD) + 10200)"
         else
