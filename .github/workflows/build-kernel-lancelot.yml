@@ -25,11 +25,13 @@ on:
 
 jobs:
   generate-build-matrix:
+    name: What to build?
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set.outputs.matrix }}
     steps:
       - id: set
+        name: Generate build matrix
         run: |
           targets=()
           if [[ "${{ github.event.inputs.build_ksun }}" == "true" ]]; then targets+=("ksun"); fi
@@ -49,6 +51,7 @@ jobs:
       CCACHE_NOHASHDIR: "true"
       CCACHE_HARDLINK: "true"
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.generate-build-matrix.outputs.matrix) }}
     steps:
     - uses: actions/checkout@v4
@@ -236,18 +239,18 @@ jobs:
         if [ ${{ env.KSU_REVERT }} = true ]; then
             git apply $GITHUB_WORKSPACE/patches/KSU_REVERT.patch
         fi
-    
+
     - name: Setup SukiSU
       if: env.ENABLE_KERNELSU == 'true' && contains(matrix.target, 'suki')
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
         if [ -d KernelSU ]; then
-            KSU_VERSION="_$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)"
+            KSU_VERSION="_$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10606)"
         else
-            KSU_VERSION=""       
+            KSU_VERSION=""
         fi
-        echo "UPLOADNAME=-KernelSU-${{ matrix.target }}$KSU_VERSION" >> $GITHUB_ENV
+        echo "UPLOADNAME=-${{ matrix.target }}$KSU_VERSION" >> $GITHUB_ENV
         if [ ${{ env.KSU_REVERT }} = true ]; then
             git apply $GITHUB_WORKSPACE/patches/KSU_REVERT.patch
         fi
